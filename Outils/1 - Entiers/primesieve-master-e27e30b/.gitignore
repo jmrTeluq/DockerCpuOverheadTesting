@@ -1,7 +1,6 @@
 .*
 *~
 !/.gitignore
-*.exe
 *.tar.gz
 *.zip
 *.obj
@@ -23,4 +22,3 @@ doc/Doxyfile
 doc/html
 doc/latex
 /build*
-/out
