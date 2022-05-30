@@ -1,37 +1,41 @@
-# Usage: docker build --memory=2g -t jmrteluq/windowstools:2004 -t jmrteluq/windowstools:latest .
+# Usage: à partir de la racine du projet, exécuter la commande:
+# docker build -f Images/Windows/Dockerfile -t jmrteluq/windowstools:2004 -t jmrteluq/windowstools:latest .
 
 # Version officielle la plus récente permettant l'isolation par processus pour
 # Windows 10 21H2 (19044.1706)
 FROM mcr.microsoft.com/windows:2004 AS Base_Windows
 
-# Définition de la console par défaut de l'image pour être compatible avec
-# le traitement par lot (batch) requis pour l'installation des programmes
-# de compilation
-SHELL ["cmd", "/S", "/C"]
+########## ---------- Variables de construction ---------- ##########
 
-# Installation des outils de compilations de Visual Studio
-# Référence directe de la documentation Microsoft pour Docker
-# https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
-# et de la référence pour les "workflows" disponibles
-# https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022
-RUN \
-    # Téléchargement du fichier d'installation
-    curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe \
-    \
-    # Installation des outils de compilations en excluant les outils connus
-    # comme incompatibles.
-    && (start /w vs_buildtools.exe --quiet --wait --norestart --nocache \
-        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" \
-        --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended  \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
-        --remove Microsoft.VisualStudio.Component.Windows81SDK \
-        || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    \
-    # Nettoyage du fichier d'installation
-    && del /q vs_buildtools.exe
+# Adresse du fichier exécutable nécessaire pour le programme primesieve
+ARG primesieveExeAdr="Outils\\entiers\\Windows\\primesieve-7.9-win-x64"
 
-# Initialisation des variables nécessaires aux outils de compilation de Visual
-# Studio et passage des paramètres nécessaires à Powershell
-ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
+# Adresse du fichier exécutable nécessaire pour le programme y-cruncher
+ARG ycruncherAdr="Outils\\nombres à virgule\\Windows\\y-cruncher v0.7.9.9509"
+
+########## ---------- Installation des prérequis ---------- ##########
+
+# Installation de l'environnement d'exécution pour C++
+ADD https://aka.ms/vs/17/release/vc_redist.x64.exe /vc_redist.x64.exe
+RUN C:\vc_redist.x64.exe /quiet /install
+
+########## ---------- Création des dossiers ---------- ##########
+
+# Création du dossier contenant les différents programmes de test
+RUN ["powershell",\
+                    "New-Item",\
+                    "-type", "directory",\
+                    "-path", "C:\\tests"]
+
+########## ---------- Copie des fichiers nécessaires ---------- ##########
+
+# Copie du programme primesieve dans le dossier approprié
+COPY $primesieveExeAdr "C:\\tests"
+
+# Copie du programme y-cruncher dans le dossier approprié
+COPY $ycruncherAdr "C:\\tests"
+
+########## ---------- Définition du programme de démarrage ---------- ##########
+
+# Initialisation de PowerShell au démarrage du conteneur
+CMD [ "powershell" ]
