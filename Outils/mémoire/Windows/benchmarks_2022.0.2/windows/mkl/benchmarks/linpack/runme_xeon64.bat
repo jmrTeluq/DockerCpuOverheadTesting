@@ -21,8 +21,8 @@ echo *Other names and brands may be claimed as the property of others.
 SETLOCAL
 
 rem Setting path to OpenMP library
-set PATH=..\..\..\redist\intel64\compiler;%PATH%
-set PATH=..\..\..\redist\intel64_win\compiler;%PATH%
+set PATH=..\..\..\compiler\intel64;%PATH%
+
 rem Setting up affinity for better threading performance
 set KMP_AFFINITY=nowarnings,compact,1,0,granularity=fine
 
