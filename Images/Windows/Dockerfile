@@ -14,7 +14,7 @@ ARG primesieveExeAdr="Outils\\entiers\\Windows\\primesieve-7.9-win-x64"
 ARG ycruncherAdr="Outils\\flottants\\Windows\\y-cruncher v0.7.9.9509"
 
 # Adresse des fichiers exécutables nécessaires pour le programme linpack
-ARG linpackAdr="Outils\\mémoire\\Windows"
+ARG linpackAdr="Outils\\mémoire\\Windows\\linpack"
 
 # Adresse permanente du fichier du runtime C++ x64
 ARG vc_redistAdr="https://aka.ms/vs/17/release/vc_redist.x64.exe"
