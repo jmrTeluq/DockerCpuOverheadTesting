@@ -38,7 +38,8 @@ RUN start /wait \
 RUN mkdir \
     tests\entiers \
     tests\flottants \
-    tests\mémoire
+    tests\mémoire \
+    résultats
 
 ########## ---------- Copie des fichiers nécessaires ---------- ##########
 
