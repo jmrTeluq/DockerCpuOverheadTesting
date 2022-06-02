@@ -14,10 +14,13 @@ ARG primesieveExeAdr="Outils\\entiers\\Windows\\primesieve-7.9-win-x64"
 ARG ycruncherAdr="Outils\\flottants\\Windows\\y-cruncher v0.7.9.9509"
 
 # Adresse des fichiers exécutables nécessaires pour le programme linpack
-ARG linpackAdr="Outils\\mémoire\\Windows\\linpack"
+ARG linpackAdr="Outils\\memoire\\Windows\\linpack"
 
 # Adresse permanente du fichier du runtime C++ x64
 ARG vc_redistAdr="https://aka.ms/vs/17/release/vc_redist.x64.exe"
+
+# Adresse du fichier script permettant d'exécuter les tests
+ARG scriptAdr="Scripts\\Windows\\runme.ps1"
 
 ########## ---------- Installation des prérequis ---------- ##########
 
@@ -38,8 +41,8 @@ RUN start /wait \
 RUN mkdir \
     tests\entiers \
     tests\flottants \
-    tests\mémoire \
-    résultats
+    tests\memoire \
+    resultats
 
 ########## ---------- Copie des fichiers nécessaires ---------- ##########
 
@@ -50,9 +53,15 @@ COPY $primesieveExeAdr "C:\\tests\\entiers"
 COPY $ycruncherAdr "C:\\tests\\flottants"
 
 # Copie du programme linpack dans le dossier approprié
-COPY $linpackAdr "C:\\tests\\mémoire"
+COPY $linpackAdr "C:\\tests\\memoire"
+
+# Copie du script pour exécuter les programmes de test
+COPY $scriptAdr "C:\\"
 
 ########## ---------- Définition du programme de démarrage ---------- ##########
 
+# Configuration de l'exécution de scripts dans le conteneur
+RUN ["powershell", "Set-ExecutionPolicy", "unrestricted"]
+
 # Initialisation de PowerShell au démarrage du conteneur
-CMD [ "powershell" ]
+CMD ["powershell"]
