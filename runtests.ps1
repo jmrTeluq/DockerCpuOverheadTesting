@@ -55,6 +55,8 @@ La memoire allouee doit se situer entre 1GB (valeur minimale par defaut de Docke
     if($construire){
         docker build -f Images/Windows/Dockerfile -t jmrteluq/windowstests:2004 -t jmrteluq/windowstests:latest .;
     }
+    # Exécuter le conteneur Docker
+    docker run -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" -it jmrteluq/windowstests;
 }
 
 
