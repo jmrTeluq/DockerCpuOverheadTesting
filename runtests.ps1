@@ -37,7 +37,7 @@ if($help){
 }else{
     # Test permettant de valider le nombre de coeurs demande
     if($coeurs -lt 1 -or $coeurs -gt $env:NUMBER_OF_PROCESSORS){
-        # Message d'erreur pour un nombre erron� de coeurs
+        # Message d'erreur pour un nombre errone de coeurs
         Write-Output "`
 Le nombre de coeurs specifies doit etre entre 1 et le nombre maximum disponible($env:NUMBER_OF_PROCESSORS).`
 ";
@@ -55,8 +55,9 @@ La memoire allouee doit se situer entre 1GB (valeur minimale par defaut de Docke
     if($construire){
         docker build -f Images/Windows/Dockerfile -t jmrteluq/windowstests:2004 -t jmrteluq/windowstests:latest .;
     }
-    # Exécuter le conteneur Docker
-    docker run -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" -it jmrteluq/windowstests;
+    # Exécuter le conteneur Docker avec un nombre de coeurs et une mémoire paramétrée et les
+    # valeurs paramétrées passée au script du conteneur
+    docker run -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" -m $memoire"g" --cpus $coeurs -it jmrteluq/windowstests powershell .\runme.ps1 -coeurs $coeurs -memoire $memoire;
 }
 
 
