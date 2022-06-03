@@ -51,13 +51,29 @@ La memoire allouee doit se situer entre 1GB (valeur minimale par defaut de Docke
         ";
         exit;
     }
+
+    # Utilisation d'un paramètre non-documenté du wrapper de programme Docker
+    # pour Windows pour s'assurer que la version Windows de Docker Engine est bien
+    # celle qui est actuellement utilisée avant de commencer les opérations. Le 
+    # paramètre documenté, SwitchDaemon, ne permet pas de spécifier la version
+    # voulu et fait simplement le changement d'une version à l'autre    
+    &$env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchWindowsEngine;
+
     # Construction, si necessaire, de l'image Docker
     if($construire){
         docker build -f Images/Windows/Dockerfile -t jmrteluq/windowstests:2004 -t jmrteluq/windowstests:latest .;
     }
     # Exécuter le conteneur Docker avec un nombre de coeurs et une mémoire paramétrée et les
     # valeurs paramétrées passée au script du conteneur
-    docker run -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" -m $memoire"g" --cpus $coeurs -it jmrteluq/windowstests powershell .\runme.ps1 -coeurs $coeurs -memoire $memoire;
+    docker run `
+    -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" `
+    -m $memoire"g" `
+    --cpus $coeurs `
+    -it jmrteluq/windowstests `
+    powershell `
+    .\runme.ps1 `
+    -coeurs $coeurs `
+    -memoire $memoire;
 }
 
 
