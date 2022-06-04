@@ -14,7 +14,7 @@ $testMemoireAdr="Outils\memoire\Windows\linpack"
 
 # Adresse pour les résultats
 $resultatsAdr="Resultats\1 - Windows (Natif)"
-
+<#
 ######################### Tests sur les entiers  ##############################
 
 # Définition d'un nom unique basé sur la date pour le fichier de résultats
@@ -97,3 +97,42 @@ for($i=1; $i -le $flottantRepetitions; $i++){
     # Même problème de redirection que pour la boucle de réchauffement
     &$testFlottantProgram $params > $null
 }
+#>
+
+################## Test sur la mémoire   ###################################
+
+$memoireNbrTests=2
+
+$memoireTaille=@(1000,2000)
+
+$memoireDimension=@(1000,2000)
+
+$memoireRepetition=@(10,10)
+
+$memoireAlignement=@(4,4)
+
+$ficherConfig="$testMemoireAdr\config.txt"
+
+$fichierResultats="$resultatsAdr\memoire.txt"
+
+"# Ligne ignoree par le programme" | `
+Out-File -FilePath $ficherConfig -Encoding utf8
+"# Resultat du test Linpack optimise pour Intel" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+"$memoireNbrTests # nombre de problemes" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+($memoireTaille -join " ") + " # tailles des problemes" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+($memoireDimension -join " ") + " # dimensions" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+($memoireRepetition -join " ") + " # nombre de repetitions par probleme" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+($memoireAlignement -join " ") + " # allignement en kB" | `
+Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+
+$env:KMP_AFFINITY="noverbose,compact,1,3,granularity=fine"
+
+&$testMemoireAdr\linpack_xeon64.exe $ficherConfig | `
+Out-File -FilePath $fichierResultats -Encoding utf8
+
+$env:KMP_AFFINITY=$null
