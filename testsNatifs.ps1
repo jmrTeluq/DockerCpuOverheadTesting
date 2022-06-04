@@ -1,138 +1,263 @@
 param(
+
+    ############# Test pour entiers ##################
+
+    # Booléen déterminant si le test sur les entiers sera effectué
+    [bool]$testEntiers=$false,
+    # Booléen déterminant si le test d'entiers sera multicœur
+    [bool]$multicoeurEntier=$true,
+    # Limite supérieure des nombres premiers recherchés (forme: 10e9)
+    [string]$entierLimite=10e9,
+    # Nombre entier de répétitions du test pour obtenir une valeur moyenne
+    [int]$entierRepetitions=10,
+    # Nombre entier d'itérations du test utilisées comme réchauffement
+    [int]$entierRechauffement=5,
+
+    ########### Test pour flottants ##################
+
+    # Booléen déterminant si le test sur les flottants sera effectué
+    [bool]$testFlottants=$false,
+    # Booléen déterminant si le test pour les flottants sera multicœur
+    [bool]$multicoeurFlottants=$true,
+    # Définition du nombre de chiffres de Pi à calculer (25m, 50m, 100m, 250m, 
+    # 500m,1b sont les tailles disponibles avant d'excéder une mémoire vive de 4GB)
+    [string]$flottantLimite="25m",
+    # Définition du nombre de répétitions à effectuer pour le réchauffement
+    [int]$flottantRechauffement=2,
+    # Définition du nombre de répétitions à effectuer pour le test
+    [int]$flottantRepetitions=1,
+
+    ########### Test mémoire ####################
+
+    # Booléen déterminant si le test sur la mémoire sera effectué
+    [bool]$testMemoire=$false,
+    # Nombre de variations de taille de problèmes calculées
+    [int]$memoireNbrTests=2,
+    # Liste des tailles de problèmes calculées
+    [int[]]$memoireTaille=@(1000,2000),
+    # Liste des dimensions correspondantes au tailles des problèmes
+    $memoireDimension=@(1000,2000),
+    # Liste du nombre de répétitions à calculer pour chaque problème
+    $memoireRepetition=@(10,10),
+    # Alignement mémoire pour chaque problème
+    $memoireAlignement=@(4,4),
+
+    ########### Paramètres utilitaires ###########
+
+    # Booléen permettant d'exécuter tous les tests avec les valeurs par défaut
+    # ou spécifiées
+    [bool]$toutTests=$false,
+    # Paramètre permettant l'affichage du texte d'aide
+    [switch]$help=$false
 )
 
-################ Définitions des adresses nécessaires #########################
+$messageAide=@"
 
-# Adresse pour l'outil primesieve
-$testEntiersAdr="Outils\entiers\Windows\primesieve-7.9-win-x64"
+############## Script de test pour l'environnement natif ######################
 
-# Adresse pour l'outil y-cruncher
-$testFlottantsAdr="Outils\flottants\Windows\y-cruncher v0.7.9.9509"
+############# Test pour entiers ##################
 
-# Adresse pour l'outil linpack
-$testMemoireAdr="Outils\memoire\Windows\linpack"
+Test utilisant le programme primesieve pour calculer les nombres premiers inferieurs
+a la limite specifiee
 
-# Adresse pour les résultats
-$resultatsAdr="Resultats\1 - Windows (Natif)"
-<#
-######################### Tests sur les entiers  ##############################
+    -testEntiers: Booleen determinant si le test sur les entiers sera effectue (Defaut: false)
 
-# Définition d'un nom unique basé sur la date pour le fichier de résultats
-$resultatsEntiersNom=Entiers(Get-Date -Format "yyyymmddHHmm")
+    -multicoeurEntier: Booleen determinant si le test d'entiers sera multicœur (Defaut: true)
+    -entierLimite: Limite superieure des nombres premiers recherches (forme: 10e9) (Defaut: 10e9)
+    -entierRepetitions: Nombre entier de repetitions du test pour obtenir une valeur moyenne (Defaut: 10)
+    -entierRechauffement: Nombre entier d'iterations du test utilisees comme rechauffement (Defaut: 5)
 
-# Définition de la limite jusqu'à laquelle le programme primesieve va chercher
-# des nombres premiers
-$entierLimite=10e9
+########### Test pour flottants ##################
 
-# Définition du nombre de répétitions à effectuer pour obtenir une valeur moyenne
-# représentative du temps de test
-$entierRepetitions=10
+Test utilisant le programme y-cruncher pour calculer Pi jusqu'a la position specifiee
 
-# Définition du nombre de répétitions à effectuer pour la phase de réchauffement
-$entierRechauffement=5
+    -testFlottants: Booléen déterminant si le test sur les flottants sera effectué (Defaut: false)
 
-# Boucle d'exécution du réchauffement où les résultats sont ignorés
-for($i=1; $i -le $entierRechauffement; $i++){
-    &$testEntiersAdr\primesieve.exe $entierLimite `
-    -c `
-    --quiet
-}
+    -multicoeurFlottants: Booléen déterminant si le test pour les flottants sera multicœur (Defaut: true)
+    -flottantLimite: Définition du nombre de chiffres de Pi à calculer (forme: "25m") (Defaut: "25m")
+    -flottantRechauffement: Définition du nombre de répétitions à effectuer pour le réchauffement (Defaut: 2)
+    -flottantRepetitions: Définition du nombre de répétitions à effectuer pour le test (Defaut: 1)
 
-# Boucle de test où les résultats sont acheminés dans le fichier texte approprié
-# du dossier de résultats
-for($i=1; $i -le $entierRepetitions; $i++){
-    &$testEntiersAdr\primesieve.exe `
-    $entierLimite `
-    -c `
-    --quiet `
-    --time `
-    >> $resultatsAdr\$resultatsEntiersNom.txt
-}
+########### Test mémoire ####################
 
-##################### Test sur les flottants  #################################
+Test utilisant le programme LinPack pour résoudre une matrice d'une dimension spécifiée
 
-# Les expressions suivantes permettant de calculer Pi avec un seul processeur et
-# tous les processeurs disponibles, respectivement. La documentation pour les
-# paramètres vient du fichier Command Lines.txt inclus avec le programme.
+    -testMemoire: Booléen déterminant si le test sur la mémoire sera effectué (Defaut: false)
 
-# Booléen commandant un test multiprocesseur
-$testFlottantsMulti=$true
+    -memoireNbrTests: Nombre de variations de taille de problèmes calculées (Defaut: 2)
+    -memoireTaille: Liste des tailles de problèmes calculées (Defaut: 1000,2000)
+    -memoireDimension: Liste des dimensions correspondantes au tailles des problèmes (Defaut: 1000,2000)
+    -memoireRepetition: Liste du nombre de répétitions à calculer pour chaque problème (Defaut: 10,10)
+    -memoireAlignement: Alignement mémoire pour chaque problème (Defaut: 4,4)
 
-# Définition du nombre de chiffres de Pi à calculer (25m, 50m, 100m, 250m, 500m,1b sont les tailles disponibles avant
-# d'excéder une mémoire vive de 4GB)
-$flottantLimite="25m"
+########### Paramètres utilitaires ###########
 
-# Définition de l'adresse du programme
-$testFlottantProgram="$testFlottantsAdr\y-cruncher.exe"
+Paramètres utilitaire pour faciliter l'usage du script
 
-# Définition des paramètres nécessaires au programme pour agir comme multiprocesseur
-# ou comme processeur unique
-if($testFlottantsMulti){
-    $params=@("skip-warnings", "priority:3", "bench", $flottantLimite, "-o", "$resultatsAdr")
+    -toutTests: Booléen permettant d'exécuter tous les tests avec les valeurs par défaut ou spécifiées (Defaut: false)
+
+    -help: Paramètre permettant l'affichage du texte d'aide
+
+    
+"@
+
+if($help){
+    Write-Output $messageAide
 }else{
-    $params=@("skip-warnings", "priority:3", "bench", $flottantLimite, "-TD:1", "-PF:none", "-o", "$resultatsAdr")
+    ################ Définitions des adresses nécessaires #########################
+
+    # Adresse pour l'outil primesieve
+    $testEntiersAdr="Outils\entiers\Windows\primesieve-7.9-win-x64"
+
+    # Adresse pour l'outil y-cruncher
+    $testFlottantsAdr="Outils\flottants\Windows\y-cruncher v0.7.9.9509"
+
+    # Adresse pour l'outil linpack
+    $testMemoireAdr="Outils\memoire\Windows\linpack"
+
+    # Adresse pour les résultats
+    $resultatsAdr="Resultats\1 - Windows (Natif)"
+
+    if($testEntiers -or $toutTests){
+
+        ######################### Tests sur les entiers  ###########################
+
+        # Les expressions suivantes permettent de calculer tous les nombres premiers
+        # inférieur à la limite spécifiée. La documentation pour les paramètres
+        # vient du fichier readme.txt incus avec le programme.
+
+        # Définition d'un nom unique basé sur la date pour le fichier de résultats
+        $resultatsEntiersNom="Entiers" + (Get-Date -Format "yyyymmddHHmm")
+
+        # Valeur du paramètre threads en fonction du type de nombre de processeurs
+        $fils=$(if($multicoeurEntier){$env:NUMBER_OF_PROCESSORS}else{1})
+
+        # Boucle d'exécution du réchauffement où les résultats et l'affichage sont
+        # ignorés
+        for($i=1; $i -le $entierRechauffement; $i++){
+            &$testEntiersAdr\primesieve.exe `
+            $entierLimite `
+            -c `
+            --quiet `
+            --threads=$fils `
+            > $null
+        }
+
+        # Boucle de test où les résultats sont acheminés dans le fichier texte approprié
+        # du dossier de résultats
+        for($i=1; $i -le $entierRepetitions; $i++){
+            &$testEntiersAdr\primesieve.exe `
+            $entierLimite `
+            -c `
+            --quiet `
+            --time `
+            --threads=$fils `
+            | Out-File -FilePath "$resultatsAdr\$resultatsEntiersNom.txt" `
+            -Encoding utf8 `
+            -Append
+        }
+    }
+
+    if($testFlottants -or $toutTests){
+
+        ##################### Test sur les flottants  ##############################
+
+        # Les expressions suivantes permettant de calculer Pi avec un seul processeur
+        # ou tous les processeurs disponibles, respectivement. La documentation pour
+        # les paramètres viennent du fichier Command Lines.txt inclus avec le programme.
+
+        # Boucle d'exécution du réchauffement où les résultats sont ignorés
+        for($i=1; $i -le $flottantRechauffement; $i++){
+            # On note ici un problème de redirection avec Powershell. En effet, 
+            # idéalement, la sortie du programme pourrait être capturée dans un
+            # fichier texte, mais la façon dont le programme gère son affichage rend
+            # cette capture problématique. Ainsi, la sortie du programme est
+            # simplement redirigée vers null.
+            &"$testFlottantsAdr\y-cruncher.exe" `
+            skip-warnings `
+            priority:3 `
+            bench `
+            $flottantLimite `
+            $(if($multicoeurFlottants){$null}else{"-TD:1 -PF:none"}) `
+            -o "$resultatsAdr" `
+            > $null
+        }
+
+        # Effacement des fichiers de réchauffement
+        Get-ChildItem $resultatsAdr `
+        | Where-Object {$_.Name -Match "Pi - [0-9-]{15,15}.txt"} `
+        | Remove-Item
+
+        # Boucle de test où les résultats sont acheminés dans les fichiers texte
+        # appropriés du dossier de résultats
+        for($i=1; $i -le $flottantRepetitions; $i++){
+            # Même problème de redirection que pour la boucle de réchauffement
+            &"$testFlottantsAdr\y-cruncher.exe" `
+            skip-warnings `
+            priority:3 `
+            bench `
+            $flottantLimite `
+            $(if($multicoeurFlottants){$null}else{"-TD:1 -PF:none"}) `
+            -o "$resultatsAdr" `
+            > $null
+        }
+
+    }if($testMemoire -or $toutTests){
+        
+        ################## Test sur la mémoire   ###################################
+
+        # Nom du fichier de configuration généré par les paramètres fournis
+        $ficherConfig="$testMemoireAdr\config.txt"
+
+        # Nom du fichier de résultats
+        $fichierResultats="$resultatsAdr\Memoire$(Get-Date -Format "yyyymmddHHmm").txt"
+
+        #### Génération du fichier de configuration respectant la norme du programme####
+
+        # 1) Ligne de commentaire qui sera ignorée par le programme
+        "# Ligne ignorée par le programme" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8
+        # 2) Ligne qui sera utilisée comme en-tête du fichier de résultats
+        "# Résultat du test Linpack optimise pour Intel" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+        # 3) Ligne indiquant le nombre de problèmes
+        "$memoireNbrTests # nombre de problèmes" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+        # 4) Ligne indiquant la taille des problèmes
+        ($memoireTaille -join " ") + " # tailles des problèmes" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+        # 5) Ligne indiquant les dimensions des problèmes
+        ($memoireDimension -join " ") + " # dimensions" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+        # 6) Ligne indiquant le nombre de répétitions pour chaque problème
+        ($memoireRepetition -join " ") + " # nombre de répétitions par problème" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+        # 7) Ligne indiquant l'alignement de mémoire pour chaque problème
+        ($memoireAlignement -join " ") + " # alignement en kb" | `
+        Out-File -FilePath $ficherConfig -Encoding utf8 -Append
+
+        # Variable environnementale utilisée pour maximiser la performance de la
+        # bibliothèque utilisée par le test
+        # noverbose (équivalent au nowarnings utilisé dans l'exemple): affichage
+        # des propriétés du système
+        # compact: relatif à la densité des fils par rapport aux cœurs (alternatives
+        # scatter et none)
+        # premier chiffre: permute: valeur par défaut 0, contrôle le mappage entre la
+        # topologie du système et le nombre de niveaux
+        # deuxième chiffre: offset: valeur par défaut 0, contrôle la position du premier
+        # fil à assigner
+        # granularity: contrôle le niveau d'accès de la bibliothèque à la topologie du
+        # système (alternatives core et thread)
+        # Référence: https://www.cita.utoronto.ca/~merz/intel_c10b/main_cls/mergedProjects/optaps_cls/common/optaps_openmp_thread_affinity.htm
+        $env:KMP_AFFINITY="noverbose,compact,1,3,granularity=fine"
+
+        # Exécution du test en utilisant le fichier de configuration créé et le fichier de 
+        # résultats spécifié
+        &$testMemoireAdr\linpack_xeon64.exe $ficherConfig | `
+        Out-File -FilePath $fichierResultats -Encoding utf8
+
+        # Remise à zéro des variables environnementales définies pour le test
+        $env:KMP_AFFINITY=$null
+    }
 }
 
-# Définition du nombre de répétitions à effectuer pour le réchauffement
-$flottantRechauffement=5
-
-# Définition du nombre de répétitions à effectuer pour le test
-$flottantRepetitions=10
-
-# Boucle d'exécution du réchauffement où les résultats sont ignorés
-for($i=1; $i -le $flottantRechauffement; $i++){
-    # On note ici un problème de redirection avec Powershell. En effet, idéalement,
-    # la sortie du programme pourrait être capturée dans un fichier texte, mais la
-    # façon dont le programme gère son affichage rend cette capture problématique.
-    # Ainsi, la sortie du programme est simplement redirigée vers null.
-    &$testFlottantProgram $params > $null
-}
-
-# Effacement des fichiers de réchauffement
-Get-ChildItem $resultatsAdr | Where-Object {$_.Name -Match "Pi - [0-9-]{15,15}.txt"} | Remove-Item
-
-# Boucle de test où les résultats sont acheminés dans les fichiers texte appropriés
-# du dossier de résultats
-for($i=1; $i -le $flottantRepetitions; $i++){
-    # Même problème de redirection que pour la boucle de réchauffement
-    &$testFlottantProgram $params > $null
-}
-#>
-
-################## Test sur la mémoire   ###################################
-
-$memoireNbrTests=2
-
-$memoireTaille=@(1000,2000)
-
-$memoireDimension=@(1000,2000)
-
-$memoireRepetition=@(10,10)
-
-$memoireAlignement=@(4,4)
-
-$ficherConfig="$testMemoireAdr\config.txt"
-
-$fichierResultats="$resultatsAdr\memoire.txt"
-
-"# Ligne ignoree par le programme" | `
-Out-File -FilePath $ficherConfig -Encoding utf8
-"# Resultat du test Linpack optimise pour Intel" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-"$memoireNbrTests # nombre de problemes" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-($memoireTaille -join " ") + " # tailles des problemes" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-($memoireDimension -join " ") + " # dimensions" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-($memoireRepetition -join " ") + " # nombre de repetitions par probleme" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-($memoireAlignement -join " ") + " # allignement en kB" | `
-Out-File -FilePath $ficherConfig -Encoding utf8 -Append
-
-$env:KMP_AFFINITY="noverbose,compact,1,3,granularity=fine"
-
-&$testMemoireAdr\linpack_xeon64.exe $ficherConfig | `
-Out-File -FilePath $fichierResultats -Encoding utf8
-
-$env:KMP_AFFINITY=$null
