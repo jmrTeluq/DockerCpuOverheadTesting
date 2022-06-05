@@ -57,44 +57,44 @@ $messageAide=@"
 
 ############# Test pour entiers ##################
 
-Test utilisant le programme primesieve pour calculer les nombres premiers inferieurs
-a la limite specifiee
+Test utilisant le programme primesieve pour calculer les nombres premiers inférieurs
+à la limite spécifiés
 
-    -testEntiers: Booleen determinant si le test sur les entiers sera effectue (Defaut: false)
+    -testEntiers: Booleen déterminant si le test sur les entiers sera effectue (Défaut: false)
 
-    -multicoeurEntier: Booleen determinant si le test d'entiers sera multicœur (Defaut: true)
-    -entierLimite: Limite superieure des nombres premiers recherches (forme: 10e9) (Defaut: 10e9)
-    -entierRepetitions: Nombre entier de repetitions du test pour obtenir une valeur moyenne (Defaut: 10)
-    -entierRechauffement: Nombre entier d'iterations du test utilisees comme rechauffement (Defaut: 5)
+    -multicoeurEntier: Booleen déterminant si le test d'entiers sera multicœur (Défaut: true)
+    -entierLimite: Limite supérieure des nombres premiers recherches (forme: 10e9) (Défaut: 10e9)
+    -entierRepetitions: Nombre entier de répétitions du test pour obtenir une valeur moyenne (Défaut: 10)
+    -entierRechauffement: Nombre entier d'itérations du test utilisées comme réchauffement (Défaut: 5)
 
 ########### Test pour flottants ##################
 
-Test utilisant le programme y-cruncher pour calculer Pi jusqu'a la position specifiee
+Test utilisant le programme y-cruncher pour calculer Pi jusqu'a la position spécifiée
 
-    -testFlottants: Booléen déterminant si le test sur les flottants sera effectué (Defaut: false)
+    -testFlottants: Booléen déterminant si le test sur les flottants sera effectué (Défaut: false)
 
-    -multicoeurFlottants: Booléen déterminant si le test pour les flottants sera multicœur (Defaut: true)
-    -flottantLimite: Définition du nombre de chiffres de Pi à calculer (forme: "25m") (Defaut: "25m")
-    -flottantRechauffement: Définition du nombre de répétitions à effectuer pour le réchauffement (Defaut: 2)
-    -flottantRepetitions: Définition du nombre de répétitions à effectuer pour le test (Defaut: 1)
+    -multicoeurFlottants: Booléen déterminant si le test pour les flottants sera multicœur (Défaut: true)
+    -flottantLimite: Définition du nombre de chiffres de Pi à calculer (forme: "25m") (Défaut: "25m")
+    -flottantRechauffement: Définition du nombre de répétitions à effectuer pour le réchauffement (Défaut: 2)
+    -flottantRepetitions: Définition du nombre de répétitions à effectuer pour le test (Défaut: 1)
 
 ########### Test mémoire ####################
 
 Test utilisant le programme LinPack pour résoudre une matrice d'une dimension spécifiée
 
-    -testMemoire: Booléen déterminant si le test sur la mémoire sera effectué (Defaut: false)
+    -testMemoire: Booléen déterminant si le test sur la mémoire sera effectué (Défaut: false)
 
-    -memoireNbrTests: Nombre de variations de taille de problèmes calculées (Defaut: 2)
-    -memoireTaille: Liste des tailles de problèmes calculées (Defaut: 1000,2000)
-    -memoireDimension: Liste des dimensions correspondantes au tailles des problèmes (Defaut: 1000,2000)
-    -memoireRepetition: Liste du nombre de répétitions à calculer pour chaque problème (Defaut: 10,10)
-    -memoireAlignement: Alignement mémoire pour chaque problème (Defaut: 4,4)
+    -memoireNbrTests: Nombre de variations de taille de problèmes calculées (Défaut: 2)
+    -memoireTaille: Liste des tailles de problèmes calculées (Défaut: 1000,2000)
+    -memoireDimension: Liste des dimensions correspondantes aux tailles des problèmes (Défaut: 1000,2000)
+    -memoireRepetition: Liste du nombre de répétitions à calculer pour chaque problème (Défaut: 10,10)
+    -memoireAlignement: Alignement mémoire pour chaque problème (Défaut: 4,4)
 
 ########### Paramètres utilitaires ###########
 
-Paramètres utilitaire pour faciliter l'usage du script
+Paramètres utilitaires pour faciliter l'usage du script
 
-    -toutTests: Booléen permettant d'exécuter tous les tests avec les valeurs par défaut ou spécifiées (Defaut: false)
+    -toutTests: Booléen permettant d'exécuter tous les tests avec les valeurs par défaut ou spécifiées (Défaut: false)
 
     -help: Paramètre permettant l'affichage du texte d'aide
 
@@ -129,9 +129,6 @@ if($help){
         # Définition d'un nom unique basé sur la date pour le fichier de résultats
         $resultatsEntiersNom="Entiers" + (Get-Date -Format "yyyymmddHHmm")
 
-        # Valeur du paramètre threads en fonction du type de nombre de processeurs
-        $fils=$(if($multicoeurEntier){$env:NUMBER_OF_PROCESSORS}else{1})
-
         # Boucle d'exécution du réchauffement où les résultats et l'affichage sont
         # ignorés
         for($i=1; $i -le $entierRechauffement; $i++){
@@ -139,7 +136,7 @@ if($help){
             $entierLimite `
             -c `
             --quiet `
-            --threads=$fils `
+            $(if($multicoeurEntier){$null}else{"--threads=1"}) `
             > $null
         }
 
@@ -151,7 +148,7 @@ if($help){
             -c `
             --quiet `
             --time `
-            --threads=$fils `
+            $(if($multicoeurEntier){$null}else{"--threads=1"}) `
             | Out-File -FilePath "$resultatsAdr\$resultatsEntiersNom.txt" `
             -Encoding utf8 `
             -Append
@@ -239,7 +236,7 @@ if($help){
         # Variable environnementale utilisée pour maximiser la performance de la
         # bibliothèque utilisée par le test
         # noverbose (équivalent au nowarnings utilisé dans l'exemple): affichage
-        # des propriétés du système
+        # des propriétés du système relatives au processeur
         # compact: relatif à la densité des fils par rapport aux cœurs (alternatives
         # scatter et none)
         # premier chiffre: permute: valeur par défaut 0, contrôle le mappage entre la
