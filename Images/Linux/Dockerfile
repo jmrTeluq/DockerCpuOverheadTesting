@@ -11,8 +11,8 @@ FROM ubuntu:22.04 as Base_Linux
 # de plusieurs programmes
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Ajuste l'encodage des caractères de bash en utilisant une des valeurs incluse
-# avec l'image officiellle
+# Ajuste l'encodage des caractères de bash en utilisant une des valeurs incluses
+# avec l'image officielle
 ENV LANG=C.utf8
 
 # Création de la liste de paquets relatifs à l'image officielle et mise à jour
@@ -37,7 +37,7 @@ RUN mkdir /tests /tests/entiers /tests/flottants /tests/mémoire /résultats
 ################ Installation du programme primesieve  #########################
 
 # On utilise ici la copie locale du projet au lieu de simplement utiliser le
-# dépot (apt install primesieve) pour pouvoir garantir que la version installée
+# dépôt (apt install primesieve) pour pouvoir garantir que la version installée
 # correspond à la version Windows utilisée
 
 # Copie de l'archive primesieve du projet dans le dossier approprié
@@ -53,7 +53,7 @@ RUN tar -xf primesieve-7.9.tar.gz
 WORKDIR /tests/entiers/primesieve-7.9
 
 # Création des fichiers cmake nécessaires, compilation et installation en
-# utilisant make et vérification des bibliothèque en utilisant ldconfig
+# utilisant make et vérification des bibliothèques en utilisant ldconfig
 RUN cmake . && make -j && make install && ldconfig
 
 # Changement de dossier vers la racine de l'image

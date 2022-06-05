@@ -25,11 +25,11 @@ ARG scriptAdr="Scripts\\Windows\\testsConteneur.ps1"
 ########## ---------- Installation des prérequis ---------- ##########
 
 # Installation de l'environnement d'exécution pour C++
-# L'utilisation de ADD, basé sur les capacité de l'hôte, permet la compatibilité
+# L'utilisation de ADD, basé sur les capacités de l'hôte, permet la compatibilité
 # avec des images de base n'ayant pas de logiciels de téléchargement spécialisé
 # inclus (i.e. curl)
 ADD $vc_redistAdr /vc_redist.x64.exe
-# Utilisation de la forme shell pour la substitution d'argument et clareté
+# Utilisation de la forme shell pour la substitution d'argument et clarté
 RUN start /wait \
     C:\vc_redist.x64.exe /quiet /install \
     && \

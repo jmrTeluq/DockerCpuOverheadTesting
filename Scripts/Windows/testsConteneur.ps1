@@ -53,7 +53,7 @@ param(
 
 $messageAide=@"
 
-############## Script de test pour l'environnement natif ######################
+############## Script de test pour l'environnement Docker ######################
 
 ############# Test pour entiers ##################
 
