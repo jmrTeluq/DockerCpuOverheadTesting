@@ -20,7 +20,7 @@ ARG linpackAdr="Outils\\memoire\\Windows\\linpack"
 ARG vc_redistAdr="https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
 # Adresse du fichier script permettant d'exécuter les tests
-ARG scriptAdr="Scripts\\Windows\\runme.ps1"
+ARG scriptAdr="Scripts\\Windows\\testsConteneur.ps1"
 
 ########## ---------- Installation des prérequis ---------- ##########
 
