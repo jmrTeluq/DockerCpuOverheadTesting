@@ -69,11 +69,11 @@ La memoire allouee doit se situer entre 1GB (valeur minimale par defaut de Docke
     -v "${PWD}\Resultats\2 - Windows (Docker):C:\resultats" `
     -m $memoire"g" `
     --cpus $coeurs `
+    --isolation=process `
     -it jmrteluq/windowstests `
     powershell `
-    .\runme.ps1 `
-    -coeurs $coeurs `
-    -memoire $memoire;
+    .\testsConteneur.ps1 `
+    -toutTests `$true;
 }
 
 
