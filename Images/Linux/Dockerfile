@@ -29,7 +29,7 @@ ARG primeSieveAdr="Outils/entiers/Linux/primesieve-7.9.tar.gz"
 ARG ycruncherAdr="Outils/flottants/Linux/y-cruncher v0.7.9.9509-static"
 
 # Définition de l'adresse du dossier du programme linpack dans le projet
-ARG linpackAdr="Outils/mémoire/Linux/benchmarks_2022.0.2"
+ARG linpackAdr="Outils/memoire/Linux/benchmarks_2022.0.2"
 
 # Création des dossiers nécessaires pour les différents tests et les résultats
 RUN mkdir /tests /tests/entiers /tests/flottants /tests/mémoire /résultats
