@@ -19,8 +19,18 @@ Aide(){
     echo "booléen controlant la construction de l'image Docker utilisée pour"
     echo " générer le conteneur."
     echo ""
+    echo "--testsNatif (Défaut: false)"
+    echo "booléen controlant l'exécution des tests natifs"
+    echo ""
+    echo "--testsConteneur (Défaut: false)"
+    echo "booléen controlant l'exécution des tests conteneur utilisant Docker"
+    echo ""
+    echo "--tests (Défaut: false)"
+    echo "booléen controlant l'exécution séquentielle des tests natifs et conteneur"
+    echo ""
     echo "--help (Défaut: false)"
     echo "booléen controlant l'affichage du menu d'aide"
+    echo ""
 }
 
 ########### Valeurs par défaut des paramètres ###################
@@ -36,6 +46,12 @@ memoire=${memoire:-8}
 construire=${construire:-false}
 # Booléen controlant l'affichage d'un menu d'aide
 help=${help:-false}
+# Booléen controlant l'exécution des tests natifs
+testsNatif=${testsNatif:-false}
+# Booléen controlant l'exécution des tests Docker
+testsConteneur=${testsConteneur:-false}
+# Booléen controlant l'exécution des tests natifs et Docker
+tests=${tests:-false}
 
 # Les scripts bash n'ont pas de fonctionalité native similaire à PowerShell
 # en ce qui concerne les arguments nommés. On peut toutefois émuler cette
@@ -61,7 +77,7 @@ done
 
 # Conditionel permettant l'affichage du menu d'aide pour toute valeur du 
 # paramètre help autre que la valeur par défaut puis la fin du script
-if [[ $help != "false" ]]; then
+if [[ $help != "false" || ($testsNatif == "false" && $testsConteneur == "false" && $tests == "false" && $construire == "false") ]]; then
     Aide
     exit 0
 fi
@@ -86,9 +102,28 @@ fi
 # Construction de l'image Docker si le paramètre construire à une autre valeur
 # que false
 if [[ $construire != "false" ]]; then
-    docker build -f Images/Linux/Dockerfile -t jmrteluq/linuxtests:22.04 -t jmrteluq/linuxtests:latest .
+    docker build \
+    -f Images/Linux/Dockerfile \
+    -t jmrteluq/linuxtests:22.04 \
+    -t jmrteluq/linuxtests:latest \
+    .
+fi
+
+# Exécution des tests natifs
+if [[ $testsNatif != "false" || $tests != "false" ]]; then
+    ./Scripts/Linux/testsNatifs.sh \
+    --toutTests true
 fi
 
 # Exécution d'un conteneur Docker avec l'image construite
 # N.B. Le nombre de coeurs est diminué de 1 car le paramèter est indexé à 0
-docker run -v "$(pwd)/Resultats/7 - Linux (Docker):/résultats" -m $memoire"G" --cpuset-cpus="0-$(($coeurs - 1))" -it jmrteluq/linuxtests
+if [[ $testsConteneur != "false" || $tests != "false" ]]; then
+    docker run \
+    -v "$(pwd)/Resultats/7 - Linux (Docker):/résultats" \
+    -m $memoire"G" \
+    --cpuset-cpus="0-$(($coeurs - 1))" \
+    -it \
+    jmrteluq/linuxtests \
+    ./testsConteneur.sh \
+    --toutTests true
+fi
