@@ -29,7 +29,10 @@ ARG primeSieveAdr="Outils/entiers/Linux/primesieve-7.9.tar.gz"
 ARG ycruncherAdr="Outils/flottants/Linux/y-cruncher v0.7.9.9509-static"
 
 # Définition de l'adresse du dossier du programme linpack dans le projet
-ARG linpackAdr="Outils/memoire/Linux/benchmarks_2022.0.2"
+ARG linpackAdr="Outils/memoire/Linux/linpack"
+
+# Définition de l'adresse du script pour exécuter les tests
+ARG scriptAdr="Scripts/Linux/testsConteneur.sh"
 
 # Création des dossiers nécessaires pour les différents tests et les résultats
 RUN mkdir /tests /tests/entiers /tests/flottants /tests/mémoire /résultats
@@ -74,6 +77,10 @@ COPY $ycruncherAdr /tests/flottants
 
 # Copie du dossier du projet contenant le programme linpack
 COPY $linpackAdr /tests/mémoire
+
+################## Copie du script d'exécution de tests ########################
+
+COPY $scriptAdr /
 
 ##################  Définition du programme de démarrage du conteneur ##########
 
