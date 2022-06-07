@@ -35,6 +35,21 @@ Aide(){
     # Définition du nombre de répétitions à effectuer pour le test
     flottantRepetitions=${flottantRepetitions:-1}
 
+########### Test mémoire ####################
+
+    # Booléen déterminant si le test sur la mémoire sera effectué
+    testMemoire=${testMemoire:-false}
+    # Nombre de variations de taille de problèmes calculées
+    memoireNbrTests=${memoireNbrTests:-2}
+    # Liste des tailles de problèmes calculées
+    memoireTaille=${memoireTaille:-"1000 2000"}
+    # Liste des dimensions correspondantes au tailles des problèmes
+    memoireDimension=${memoireDimension:-"1000 2000"}
+    # Liste du nombre de répétitions à calculer pour chaque problème
+    memoireRepetition=${memoireRepetition:-"10 10"}
+    # Alignement mémoire pour chaque problème
+    memoireAlignement=${memoireAlignement:-"4 4"}
+
 ############# Paramètres utilitaires ##################
 
     # Paramètre controlant l'affichage du menu d'aide
@@ -149,3 +164,50 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
     done
 fi
 
+##################### Test sur la mémoire  ##############################
+
+if [[ $testMemoire != "false" || $toutTests != "false" ]]; then
+
+    # Nom du fichier de configuration généré par les paramètres fournis
+    fichierConfig="$resultatsAdr/config.txt"
+
+    # Nom du fichier de résultats
+    fichierResultats="$resultatsAdr/Memoire$(date +"%Y%m%d%H%M").txt"
+
+    #### Génération du fichier de configuration respectant la norme du programme####
+
+    # 1) Ligne de commentaire qui sera ignorée par le programme
+    echo "# Ligne ignorée par le programme" > "$fichierConfig"
+    # 2) Ligne qui sera utilisée comme en-tête du fichier de résultats
+    echo "# Résultat du test Linpack optimisé pour Intel" >> "$fichierConfig"
+    # 3) Ligne indiquant le nombre de problèmes
+    echo "$memoireNbrTests # nombre de problèmes" >> "$fichierConfig"
+    # 4) Ligne indiquant la taille des problèmes
+    echo "$memoireTaille # tailles des problèmes" >> "$fichierConfig"
+    # 5) Ligne indiquant les dimensions des problèmes
+    echo "$memoireDimension # dimensions" >> "$fichierConfig"
+    # 6) Ligne indiquant le nombre de répétitions pour chaque problème
+    echo "$memoireRepetition # nombre de répétitions par problème" >> "$fichierConfig"
+    # 7) Ligne indiquant l'alignement de mémoire pour chaque problème
+    echo "$memoireAlignement # alignement en kB" >> "$fichierConfig"
+
+    # Variable environnementale utilisée pour maximiser la performance de la
+    # bibliothèque utilisée par le test
+    # noverbose (équivalent au nowarnings utilisé dans l'exemple): affichage
+    # des propriétés du système relatives au processeur
+    # compact: relatif à la densité des fils par rapport aux cœurs (alternatives
+    # scatter et none)
+    # premier chiffre: permute: valeur par défaut 0, contrôle le mappage entre la
+    # topologie du système et le nombre de niveaux
+    # deuxième chiffre: offset: valeur par défaut 0, contrôle la position du premier
+    # fil à assigner
+    # granularity: contrôle le niveau d'accès de la bibliothèque à la topologie du
+    # système (alternatives core et thread)
+    # Référence: https://www.cita.utoronto.ca/~merz/intel_c10b/main_cls/mergedProjects/optaps_cls/common/optaps_openmp_thread_affinity.htm
+    export KMP_AFFINITY=noverbose,compact,1,3,granularity=fine
+
+    #"$testMemoireAdr/xlinpack_xeon64" $fichierConfig
+
+    $testMemoireAdr/xlinpack_xeon64 "$fichierConfig"
+
+fi

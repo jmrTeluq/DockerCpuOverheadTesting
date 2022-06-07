@@ -34,7 +34,7 @@ param(
     # Nombre de variations de taille de problèmes calculées
     [int]$memoireNbrTests=2,
     # Liste des tailles de problèmes calculées
-    [int[]]$memoireTaille=@(1000,2000),
+    $memoireTaille=@(1000,2000),
     # Liste des dimensions correspondantes au tailles des problèmes
     $memoireDimension=@(1000,2000),
     # Liste du nombre de répétitions à calculer pour chaque problème
