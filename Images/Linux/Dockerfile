@@ -11,7 +11,7 @@ FROM ubuntu:22.04 as Base_Linux
 # de plusieurs programmes
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Ajuste l'encodage des caractères de bash en utilisant une des valeurs incluses
+# Ajuste l'encodage des caractères de la coquille bash en utilisant une des valeurs incluses
 # avec l'image officielle
 ENV LANG=C.utf8
 

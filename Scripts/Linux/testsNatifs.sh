@@ -40,15 +40,15 @@ Aide(){
     echo ""
     echo "--memoireNbrTests (Défaut: 2): Nombre de variations de taille de problèmes calculées"
     echo "--memoireTaille (Défaut: \"1000 2000\"): Liste des tailles de problèmes calculées"
-    echo "--memoireDimension (Défaut: \"1000 2000\"): Liste des dimensions correspondantes au tailles des problèmes"
+    echo "--memoireDimension (Défaut: \"1000 2000\"): Liste des dimensions correspondantes aux tailles des problèmes"
     echo "--memoireRepetition (Défaut: \"10 10\"): Liste du nombre de répétitions à calculer pour chaque problème"
     echo "--memoireAlignement (Défaut: \"4 4\"): Alignement mémoire pour chaque problème"
     echo ""
     echo "############# Paramètres utilitaires ##################"
     echo ""
-    echo "--help (Défaut: false): Paramètre controlant l'affichage du menu d'aide"
+    echo "--help (Défaut: false): Paramètre contrôlant l'affichage du menu d'aide"
     echo ""
-    echo "--toutTests (Défaut: false): Booléen controlant l'exécution séquentielle de tous les tests"
+    echo "--toutTests (Défaut: false): Booléen contrôlant l'exécution séquentielle de tous les tests"
     echo ""
 }
 
@@ -89,7 +89,7 @@ Aide(){
     memoireNbrTests=${memoireNbrTests:-2}
     # Liste des tailles de problèmes calculées
     memoireTaille=${memoireTaille:-"1000 2000"}
-    # Liste des dimensions correspondantes au tailles des problèmes
+    # Liste des dimensions correspondantes aux tailles des problèmes
     memoireDimension=${memoireDimension:-"1000 2000"}
     # Liste du nombre de répétitions à calculer pour chaque problème
     memoireRepetition=${memoireRepetition:-"10 10"}
@@ -98,12 +98,12 @@ Aide(){
 
 ############# Paramètres utilitaires ##################
 
-    # Paramètre controlant l'affichage du menu d'aide
+    # Paramètre contrôlant l'affichage du menu d'aide
     help=${help:-false}
-    # Booléen controlant l'exécution de tous les tests
+    # Booléen contrôlant l'exécution de tous les tests
     toutTests=${toutTests:-false}
 
-# Les scripts bash n'ont pas de fonctionalité native similaire à PowerShell
+# Les scripts bash n'ont pas de fonctionnalités natives similaires à PowerShell
 # en ce qui concerne les arguments nommés. On peut toutefois émuler cette
 # fonctionnalité en utilisant plusieurs approches. L'approche choisie ici, soit
 # celle d'une boucle basée sur la décomposition itérative des arguments nommés
@@ -118,7 +118,7 @@ while [ $# -gt 0 ]; do
     if [[ $1 == *"--"* ]]; then
         # substitution de -- par null pour obtenir le nom du paramètre
         param="${1/--/}"
-        # assignation de la valeur donné au nom obtenu
+        # assignation de la valeur donnée au nom obtenu
         declare $param="$2"
     fi
     # fonction bash native passant au prochain argument
@@ -143,7 +143,7 @@ resultatsAdr="Resultats/6 - Linux (Natif)"
 
 ############### Test sur les entiers ###########################
 
-# Test permettant de n'exécuter les tests pour entier que lorsque nécessaires
+# Test permettant de n'exécuter les tests pour entier que lorsque nécessaire
 if [[ $testEntiers != "false" || $toutTests != "false" ]]; then
     # Définition d'un nom unique basé sur la date pour le fichier de résultats
     resultatsEntiersNom="Entiers$(date +"%Y%m%d%H%M").txt"
@@ -173,7 +173,7 @@ fi
 
 ##################### Test sur les flottants  ##############################
 
-# Test permettant de n'exécuter les tests pour flottants que lorsque nécessaires
+# Test permettant de n'exécuter les tests pour flottants que lorsque nécessaire
 if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
 
     # Boucle d'exécution du réchauffement où les résultats sont ignorés
@@ -194,7 +194,7 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
     find "$resultatsAdr" -type f -name 'Pi - 2*.txt' -delete
 
     # Boucle d'exécution de test où les résultats sont acheminés dans le dossier
-    # approprié et l'affichage des sorties du programmes durant son exécution
+    # approprié et l'affichage des sorties du programme durant son exécution
     # sont sauvegardés à des fins diagnostiques dans un fichier séparé.
     for ((i=1; i <= $flottantRepetitions; i++)); do
         "$testFlottantsAdr/y-cruncher" \
