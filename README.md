@@ -3,4 +3,4 @@
 
 ## Exécution
 
-Les scripts d'exécution sont runtests.sh et runtests.ps1 pour les environnements Linux et Windows respectivement.
+Les scripts d'exécution sont *runtests.sh* et *runtests.ps1* pour les environnements Linux et Windows respectivement. Dans les deux cas, un message d'aide est fourni pour identifier les paramètres disponibles pour chaque script.
