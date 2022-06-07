@@ -2,7 +2,7 @@
 # docker build -f Images/Windows/Dockerfile -t jmrteluq/windowstools:2004 -t jmrteluq/windowstools:latest .
 
 # Version officielle la plus récente permettant l'isolation par processus pour
-# Windows 10 21H2 (19044.1706)
+# Windows 10 21H2 (19044.1741)
 FROM mcr.microsoft.com/windows:2004 AS Base_Windows
 
 ########## ---------- Variables de construction ---------- ##########
