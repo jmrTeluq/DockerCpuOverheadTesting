@@ -3,7 +3,53 @@
 ########### Fonction d'aide ########################
 Aide(){
     # Affichage d'un message d'aide
-    echo "Menu d'aide"
+    echo "Le script actuel permet de réaliser des tests de performance de processeur"
+    echo "en utilisant un, ou plusieurs, programmes différents."
+    echo ""
+    echo "Programmes:"
+    echo ""
+    echo "primesieve 7.9: opérations sur les entiers en calculant des nombres premiers"
+    echo "y-cruncher 7.9.9509: opérations sur les flottants en calculant Pi jusqu'à"
+    echo "une précision définie"
+    echo "Intel LinPack 2022-0-2-84: opérations de résolution d'une matrice pour"
+    echo "tester l'utilisation de la mémoire vive"
+    echo ""
+    echo "Paramètres:"
+    echo ""
+    echo "############# Test pour entiers ##################"
+    echo ""
+    echo "--testEntiers (Défaut: false): Booléen déterminant si le test sur les entiers sera effectué"
+    echo ""
+    echo "--multicoeurEntier (Défaut: true): Booléen déterminant si le test d'entiers sera multicœur"
+    echo "--entierLimite (Défaut: \"10e9\"): Limite supérieure des nombres premiers recherchés"
+    echo "--entierRepetitions (Défaut: 10): Nombre entier de répétitions du test pour obtenir une valeur moyenne"
+    echo "--entierRechauffement (Défaut: 5): Nombre entier d'itérations du test utilisées comme réchauffement"
+    echo ""
+    echo "############# Test pour flottants ##################"
+    echo ""
+    echo "--testFlottants (Défaut: false): Booléen déterminant si le test sur les flottants sera effectué"
+    echo ""
+    echo "--multicoeurFlottants (Défaut: true): Booléen déterminant si le test pour les flottants sera multicœur"
+    echo "--flottantLimite (Défaut: \"25m\"): Définition du nombre de chiffres de Pi à calculer (25m, 50m, 100m, 250m...)"
+    echo "--flottantRechauffement (Défaut: 2): Définition du nombre de répétitions à effectuer pour le réchauffement"
+    echo "--flottantRepetitions (Défaut: 1): Définition du nombre de répétitions à effectuer pour le test"
+    echo ""
+    echo "########### Test mémoire ####################"
+    echo ""
+    echo "--testMemoire (Défaut: false): Booléen déterminant si le test sur la mémoire sera effectué"
+    echo ""
+    echo "--memoireNbrTests (Défaut: 2): Nombre de variations de taille de problèmes calculées"
+    echo "--memoireTaille (Défaut: \"1000 2000\"): Liste des tailles de problèmes calculées"
+    echo "--memoireDimension (Défaut: \"1000 2000\"): Liste des dimensions correspondantes au tailles des problèmes"
+    echo "--memoireRepetition (Défaut: \"10 10\"): Liste du nombre de répétitions à calculer pour chaque problème"
+    echo "--memoireAlignement (Défaut: \"4 4\"): Alignement mémoire pour chaque problème"
+    echo ""
+    echo "############# Paramètres utilitaires ##################"
+    echo ""
+    echo "--help (Défaut: false): Paramètre controlant l'affichage du menu d'aide"
+    echo ""
+    echo "--toutTests (Défaut: false): Booléen controlant l'exécution séquentielle de tous les tests"
+    echo ""
 }
 
 ########### Valeurs par défaut des paramètres ###################
@@ -79,7 +125,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [[ $help != "false" ]]; then
+if [[ $help != "false" || ($testEntiers == "false" && $testFlottants == "false" && $testMemoire == "false" && $toutTests == "false") ]]; then
     Aide
     exit 0
 fi
@@ -160,7 +206,7 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
         && echo "" \
         || echo "-TD:1 -PF:none") \
         -o "$resultatsAdr" \
-        >> "$resultatsAdr/detailsFlottants"
+        >> "$resultatsAdr/detailsFlottants.txt"
     done
 fi
 
@@ -193,7 +239,7 @@ if [[ $testMemoire != "false" || $toutTests != "false" ]]; then
 
     # Variable environnementale utilisée pour maximiser la performance de la
     # bibliothèque utilisée par le test
-    # noverbose (équivalent au nowarnings utilisé dans l'exemple): affichage
+    # noverbose (équivalent au nowarnings utilisé dans l'exemple fourni par la bibliothèque): affichage
     # des propriétés du système relatives au processeur
     # compact: relatif à la densité des fils par rapport aux cœurs (alternatives
     # scatter et none)
@@ -206,8 +252,8 @@ if [[ $testMemoire != "false" || $toutTests != "false" ]]; then
     # Référence: https://www.cita.utoronto.ca/~merz/intel_c10b/main_cls/mergedProjects/optaps_cls/common/optaps_openmp_thread_affinity.htm
     export KMP_AFFINITY=noverbose,compact,1,3,granularity=fine
 
-    #"$testMemoireAdr/xlinpack_xeon64" $fichierConfig
-
-    $testMemoireAdr/xlinpack_xeon64 "$fichierConfig"
+    # Exécution du test linpack à partir du fichier de configuration créé et
+    # exportation des résultats dans le fichier de résultats désigné
+    $testMemoireAdr/xlinpack_xeon64 "$fichierConfig" > "$fichierResultats"
 
 fi
