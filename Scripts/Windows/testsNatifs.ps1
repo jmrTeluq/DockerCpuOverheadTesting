@@ -3,7 +3,8 @@ param(
     ############# Test pour entiers ##################
 
     # Booléen déterminant si le test sur les entiers sera effectué
-    [bool]$testEntiers=$false,
+    [switch]$testEntiers,
+
     # Booléen déterminant si le test d'entiers sera multicœur
     [bool]$multicoeurEntier=$true,
     # Limite supérieure des nombres premiers recherchés (forme: 10e9)
@@ -16,7 +17,8 @@ param(
     ########### Test pour flottants ##################
 
     # Booléen déterminant si le test sur les flottants sera effectué
-    [bool]$testFlottants=$false,
+    [switch]$testFlottants,
+
     # Booléen déterminant si le test pour les flottants sera multicœur
     [bool]$multicoeurFlottants=$true,
     # Définition du nombre de chiffres de Pi à calculer (25m, 50m, 100m, 250m, 
@@ -30,25 +32,26 @@ param(
     ########### Test mémoire ####################
 
     # Booléen déterminant si le test sur la mémoire sera effectué
-    [bool]$testMemoire=$false,
+    [switch]$testMemoire,
+
     # Nombre de variations de taille de problèmes calculées
     [int]$memoireNbrTests=2,
     # Liste des tailles de problèmes calculées
-    $memoireTaille=@(1000,2000),
+    [string]$memoireTaille="1000 2000",
     # Liste des dimensions correspondantes au tailles des problèmes
-    $memoireDimension=@(1000,2000),
+    [string]$memoireDimension="1000 2000",
     # Liste du nombre de répétitions à calculer pour chaque problème
-    $memoireRepetition=@(10,10),
+    [string]$memoireRepetition="10 10",
     # Alignement mémoire pour chaque problème
-    $memoireAlignement=@(4,4),
+    [string]$memoireAlignement="4 4",
 
     ########### Paramètres utilitaires ###########
 
     # Booléen permettant d'exécuter tous les tests avec les valeurs par défaut
     # ou spécifiées
-    [bool]$toutTests=$false,
+    [switch]$toutTests,
     # Paramètre permettant l'affichage du texte d'aide
-    [switch]$help=$false
+    [switch]$help
 )
 
 $messageAide=@"
@@ -60,9 +63,9 @@ $messageAide=@"
 Test utilisant le programme primesieve pour calculer les nombres premiers inférieurs
 à la limite spécifiés
 
-    -testEntiers: Booleen déterminant si le test sur les entiers sera effectue (Défaut: false)
+    -testEntiers: paramètre déterminant si le test sur les entiers sera effectue
 
-    -multicoeurEntier: Booleen déterminant si le test d'entiers sera multicœur (Défaut: true)
+    -multicoeurEntier: Booleen déterminant si le test d'entiers sera multicœur (Défaut: `$true)
     -entierLimite: Limite supérieure des nombres premiers recherches (forme: 10e9) (Défaut: 10e9)
     -entierRepetitions: Nombre entier de répétitions du test pour obtenir une valeur moyenne (Défaut: 10)
     -entierRechauffement: Nombre entier d'itérations du test utilisées comme réchauffement (Défaut: 5)
@@ -71,10 +74,10 @@ Test utilisant le programme primesieve pour calculer les nombres premiers infér
 
 Test utilisant le programme y-cruncher pour calculer Pi jusqu'a la position spécifiée
 
-    -testFlottants: Booléen déterminant si le test sur les flottants sera effectué (Défaut: false)
+    -testFlottants: paramètre déterminant si le test sur les flottants sera effectué
 
-    -multicoeurFlottants: Booléen déterminant si le test pour les flottants sera multicœur (Défaut: true)
-    -flottantLimite: Définition du nombre de chiffres de Pi à calculer (forme: "25m") (Défaut: "25m")
+    -multicoeurFlottants: Booléen déterminant si le test pour les flottants sera multicœur (Défaut: `$true)
+    -flottantLimite: Définition du nombre de chiffres de Pi à calculer (forme: '25m') (Défaut: '25m')
     -flottantRechauffement: Définition du nombre de répétitions à effectuer pour le réchauffement (Défaut: 2)
     -flottantRepetitions: Définition du nombre de répétitions à effectuer pour le test (Défaut: 1)
 
@@ -82,22 +85,21 @@ Test utilisant le programme y-cruncher pour calculer Pi jusqu'a la position spé
 
 Test utilisant le programme LinPack pour résoudre une matrice d'une dimension spécifiée
 
-    -testMemoire: Booléen déterminant si le test sur la mémoire sera effectué (Défaut: false)
+    -testMemoire: paramètre déterminant si le test sur la mémoire sera effectué
 
     -memoireNbrTests: Nombre de variations de taille de problèmes calculées (Défaut: 2)
-    -memoireTaille: Liste des tailles de problèmes calculées (Défaut: 1000,2000)
-    -memoireDimension: Liste des dimensions correspondantes aux tailles des problèmes (Défaut: 1000,2000)
-    -memoireRepetition: Liste du nombre de répétitions à calculer pour chaque problème (Défaut: 10,10)
-    -memoireAlignement: Alignement mémoire pour chaque problème (Défaut: 4,4)
+    -memoireTaille: Liste des tailles de problèmes calculées (Défaut: '1000 2000')
+    -memoireDimension: Liste des dimensions correspondantes aux tailles des problèmes (Défaut: '1000 2000')
+    -memoireRepetition: Liste du nombre de répétitions à calculer pour chaque problème (Défaut: '10 10')
+    -memoireAlignement: Alignement mémoire pour chaque problème (Défaut: '4 4')
 
 ########### Paramètres utilitaires ###########
 
 Paramètres utilitaires pour faciliter l'usage du script
 
-    -toutTests: Booléen permettant d'exécuter tous les tests avec les valeurs par défaut ou spécifiées (Défaut: false)
+    -toutTests: paramètre permettant d'exécuter tous les tests avec les valeurs par défaut ou spécifiées
 
     -help: Paramètre permettant l'affichage du texte d'aide
-
     
 "@
 
@@ -221,16 +223,16 @@ if($help){
         "$memoireNbrTests # nombre de problèmes" | `
         Out-File -FilePath $ficherConfig -Encoding utf8 -Append
         # 4) Ligne indiquant la taille des problèmes
-        ($memoireTaille -join " ") + " # tailles des problèmes" | `
+        "$memoireTaille # tailles des problèmes" | `
         Out-File -FilePath $ficherConfig -Encoding utf8 -Append
         # 5) Ligne indiquant les dimensions des problèmes
-        ($memoireDimension -join " ") + " # dimensions" | `
+        "$memoireDimension # dimensions" | `
         Out-File -FilePath $ficherConfig -Encoding utf8 -Append
         # 6) Ligne indiquant le nombre de répétitions pour chaque problème
-        ($memoireRepetition -join " ") + " # nombre de répétitions par problème" | `
+        "$memoireRepetition # nombre de répétitions par problème" | `
         Out-File -FilePath $ficherConfig -Encoding utf8 -Append
         # 7) Ligne indiquant l'alignement de mémoire pour chaque problème
-        ($memoireAlignement -join " ") + " # alignement en kb" | `
+        "$memoireAlignement # alignement en kB" | `
         Out-File -FilePath $ficherConfig -Encoding utf8 -Append
 
         # Variable environnementale utilisée pour maximiser la performance de la
