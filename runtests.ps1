@@ -99,6 +99,29 @@ param(
 
 )
 
+# Fonction de nettoyage pour les fichiers texte de résultats
+function nettoyage {
+
+    param(
+        $path
+    )
+
+    # Nettoyage pour les fichiers du test sur les flottants
+
+    # Création d'un fichier conteant les temps de calcul pour toutes les répétitions
+    # du test
+    Select-String -Path "$path\*.txt" `
+    -Pattern '(^Total Computation Time:[\s]+)([\d]+\.[\d]{3})' `
+    | Select-Object -Expand Matches `
+    | Select-Object -Expand Value `
+    | Out-File -FilePath "$path\Flottants.txt"
+    # Effacement des fichiers de résultats individuels et du fichier de vérification
+    Get-ChildItem $path `
+    | Where-Object {$_.Name -Match "Pi*"} `
+    | Remove-Item
+
+}
+
 # Message d'erreur affiche lorsque le paramètre -help est invoqué
 $messageErreur="`
 Le script actuel permet de faciliter la construction et l'utilisation de l'image Docker pour effectuer les tests. `
@@ -271,6 +294,7 @@ if($help -or (!$testsNatif -and !$testsWSL2 -and !$testsWSL2Processus -and !$tes
     # par défaut ou spécifiés
     if($testsNatif){
         Invoke-Expression "Scripts\Windows\testsNatifs.ps1 $paramètresTests"
+        Nettoyage "Resultats\1 - Windows (Natif)"
     }
 
     # N.B. Docker n'offre pas d'interface CLI pour changer d'un moteur à l'autre,
@@ -284,6 +308,7 @@ if($help -or (!$testsNatif -and !$testsWSL2 -and !$testsWSL2Processus -and !$tes
         -v "${PWD}\Resultats\2 - Windows (WSL 2):C:\resultats" `
         $paramètresConteneur `
         $paramètresTests
+        Nettoyage "Resultats\2 - Windows (WSL 2)"
     }
 
     # Conditionel permettant l'exécution des tests sous moteur WSL 2 avec isolation par processeur
@@ -295,6 +320,7 @@ if($help -or (!$testsNatif -and !$testsWSL2 -and !$testsWSL2Processus -and !$tes
         --isolation=process `
         $paramètresConteneur `
         $paramètresTests
+        Nettoyage "Resultats\3 - Windows (WSL 2 - Process)"
     }
 
     # Conditionel permettant l'exécution des tests sous moteur patrimonial HyperV
@@ -305,6 +331,7 @@ if($help -or (!$testsNatif -and !$testsWSL2 -and !$testsWSL2Processus -and !$tes
         -v "${PWD}\Resultats\4 - Windows (HyperV):C:\resultats" `
         $paramètresConteneur `
         $paramètresTests
+        Nettoyage "Resultats\4 - Windows (HyperV)"
     }
 
     # Conditionel permettant l'exécution des tests sous moteur patrimonial HyperV avec isolation par processeur
@@ -316,6 +343,7 @@ if($help -or (!$testsNatif -and !$testsWSL2 -and !$testsWSL2Processus -and !$tes
         --isolation=process `
         $paramètresConteneur `
         $paramètresTests
+        Nettoyage "Resultats\5 - Windows (HyperV - Process)"
     }
     
 }

@@ -183,7 +183,7 @@ if($help){
             > $null
         }
 
-        # Effacement des fichiers de réchauffement
+        # Effacement des fichiers de réchauffement mais pas du fichier de validation
         Get-ChildItem $resultatsAdr `
         | Where-Object {$_.Name -Match "Pi - [0-9-]{15,15}.txt"} `
         | Remove-Item
