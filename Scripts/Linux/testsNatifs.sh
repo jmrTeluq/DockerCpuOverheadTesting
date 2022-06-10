@@ -194,8 +194,7 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
     find "$resultatsAdr" -type f -name 'Pi - 2*.txt' -delete
 
     # Boucle d'exécution de test où les résultats sont acheminés dans le dossier
-    # approprié et l'affichage des sorties du programme durant son exécution
-    # sont sauvegardés à des fins diagnostiques dans un fichier séparé.
+    # approprié
     for ((i=1; i <= $flottantRepetitions; i++)); do
         "$testFlottantsAdr/y-cruncher" \
         skip-warnings \
@@ -206,7 +205,7 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
         && echo "" \
         || echo "-TD:1 -PF:none") \
         -o "$resultatsAdr" \
-        >> "$resultatsAdr/detailsFlottants.txt"
+        >> /dev/null
     done
 fi
 
