@@ -38,12 +38,15 @@ Nettoyage(){
     
     # Nettoyage des fichiers du test sur les flottants
 
-    # Compilation des temps d'exécution dans un seul fichier texte
-    grep -hroP "Total Computation Time:[\s]+\K([\d]+\.[\d]+)" "$1" > "Flottants.txt"
-    # Transfert du fichier synthèse dans le dossier de résultats
-    mv "Flottants.txt" "$1/Flottants.txt"
-    # Effacement des fichiers de résultats individuels et du fichier de vérification
-    find "$1" -type f -name 'Pi*.txt' -delete
+    if [[ $toutTests != "false" || $testFlottants != "false" ]]; then
+        # Compilation des temps d'exécution dans un seul fichier texte
+        find "$1" -type f -name 'Pi - 2*.txt' -print0 | xargs -0 grep -hoP "Total Computation Time:[\s]+\K([\d]+\.[\d]+)" > "Flottants.txt"
+        # Transfert du fichier synthèse dans le dossier de résultats
+        mv "Flottants.txt" "$1/Flottants$(date +"%Y%m%d%H%M").txt"
+        # Effacement des fichiers de résultats individuels et du fichier de vérification
+        find "$1" -type f -name 'Pi*.txt' -delete
+    fi
+    
 }
 
 ####################### Valeurs par défaut des tests ###########################
