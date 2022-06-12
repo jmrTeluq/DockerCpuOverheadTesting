@@ -108,18 +108,19 @@ function nettoyage {
 
     # Nettoyage pour les fichiers du test sur les flottants
 
-    # Création d'un fichier conteant les temps de calcul pour toutes les répétitions
-    # du test
-    Select-String -Path "$path\*.txt" `
-    -Pattern '(^Total Computation Time:[\s]+)([\d]+\.[\d]{3})' `
-    | Select-Object -Expand Matches `
-    | Select-Object -Expand Value `
-    | Out-File -FilePath "$path\Flottants.txt"
-    # Effacement des fichiers de résultats individuels et du fichier de vérification
-    Get-ChildItem $path `
-    | Where-Object {$_.Name -Match "Pi*"} `
-    | Remove-Item
-
+    if($testFlottants -or $toutTests){
+        # Création d'un fichier conteant les temps de calcul pour toutes les répétitions
+        # du test
+        Select-String -Path "$path\Pi*.txt" `
+        -Pattern '(^Total Computation Time:[\s]+)([\d]+\.[\d]{3})' `
+        | Select-Object -Expand Matches `
+        | Select-Object -Expand Value `
+        | Out-File -FilePath "$path\Flottants$(Get-Date -Format "yyyymmddHHmm").txt"
+        # Effacement des fichiers de résultats individuels et du fichier de vérification
+        Get-ChildItem $path `
+        | Where-Object {$_.Name -Match "Pi*"} `
+        | Remove-Item
+    }
 }
 
 # Message d'erreur affiche lorsque le paramètre -help est invoqué
