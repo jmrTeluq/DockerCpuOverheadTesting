@@ -177,10 +177,12 @@ fi
 if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
 
     # Boucle d'exécution du réchauffement où les résultats sont ignorés
+    # N. B. la valeur de priorité "3" n'est pas documentée mais, lorsque combinée
+    # avec sudo, permet une priorité RT
     for ((i=1; i <= $flottantRechauffement; i++)); do
         "$testFlottantsAdr/y-cruncher" \
         skip-warnings \
-        priority:0 \
+        priority:3 \
         bench \
         $flottantLimite \
         $([[ $multicoeurFlottants == "true" ]] \
@@ -195,10 +197,12 @@ if [[ $testFlottants != "false" || $toutTests != "false" ]]; then
 
     # Boucle d'exécution de test où les résultats sont acheminés dans le dossier
     # approprié
+    # N. B. la valeur de priorité "3" n'est pas documentée mais, lorsque combinée
+    # avec sudo, permet une priorité RT
     for ((i=1; i <= $flottantRepetitions; i++)); do
         "$testFlottantsAdr/y-cruncher" \
         skip-warnings \
-        priority:0 \
+        priority:3 \
         bench \
         $flottantLimite \
         $([[ $multicoeurFlottants == "true" ]] \
