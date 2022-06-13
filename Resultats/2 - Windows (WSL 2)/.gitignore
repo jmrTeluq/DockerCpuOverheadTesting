@@ -1,3 +1,4 @@
 *.txt
 !Entiers*.txt
 !Flottants*.txt
+!Memoire*.txt
