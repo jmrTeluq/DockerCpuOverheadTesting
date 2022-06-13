@@ -253,7 +253,7 @@ if [[ $testMemoire != "false" || $toutTests != "false" ]]; then
     # granularity: contrôle le niveau d'accès de la bibliothèque à la topologie du
     # système (alternatives core et thread)
     # Référence: https://www.cita.utoronto.ca/~merz/intel_c10b/main_cls/mergedProjects/optaps_cls/common/optaps_openmp_thread_affinity.htm
-    export KMP_AFFINITY=noverbose,compact,1,3,granularity=fine
+    export KMP_AFFINITY=noverbose,scatter,0,0,granularity=fine
 
     # Exécution du test linpack à partir du fichier de configuration créé et
     # exportation des résultats dans le fichier de résultats désigné
